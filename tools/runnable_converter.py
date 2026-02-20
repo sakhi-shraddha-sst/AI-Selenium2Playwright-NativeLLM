@@ -70,24 +70,17 @@ class Selenium2PlaywrightConverter:
     def _build_prompt(self, source_code):
         return f"""
 [INST]
-You are a strict Automation Code Translator. Your goal is to convert Selenium Java into Playwright TypeScript with 100% logic fidelity.
+You are an expert Automation Engineer. Convert the following Selenium Java test code into a fully runnable Playwright TypeScript test file.
 
-### CRITICAL RULES - DO NOT VIOLATE:
-1. **NO HALLUCINATIONS**: Your output must reflect ONLY the logic found in the Source Code.
-   - If the source DOES NOT have a URL, DO NOT add one.
-   - If the source ONLY finds an element and doesn't click it, DO NOT add `.click()`.
-   - DO NOT add comments explaining what you did; only preserve original comments.
-   - DO NOT use the word "TODO" unless there is a genuine technical impossibility.
-2. **STRICT FIDELITY**: If the input is 1 line, the conversion should be approximately 1 line (inside the test wrapper).
-3. **PLAYWRIGHT SYNTAX**: 
-   - Use `await page.locator('selector')` or `page.getBy...` + action.
-   - **PREFER Locators** over `page.$` or `page.$$`. 
-   - If only finding: `const el = page.locator('xpath=//tag');`
-   - **NEVER** use `.element()`. It does not exist in Playwright.
-4. **CODE ONLY**: Return ONLY the converted lines of code. 
-   - DO NOT include `import {{ test }} from '@playwright/test'`.
-   - DO NOT wrap in a `test()` block.
-   - Return ONLY the executable Playwright lines.
+### Requirements for Runnability:
+1. Use the `@playwright/test` framework structure: `import {{ test, expect }} from '@playwright/test';`.
+2. Wrap the test logic in a `test('converted selenium test', async ({{ page }}) => {{ ... }});` block.
+3. Map all Selenium actions (navigation, find element, click, sendKeys, assertions) to their Playwright equivalents.
+4. Use modern locators like `page.getByRole()`, `page.getByLabel()`, `page.getByPlaceholder()`, or `page.locator()`.
+5. Handle assertions using the `expect` library (e.g., `await expect(page.locator(...)).toBeVisible()`).
+6. Preserve all original comments and test logic flow.
+7. If a mapping is unknown, insert a `// TODO: [Explanation]`.
+8. DO NOT return any conversational text. Return ONLY the code inside the code block.
 
 ### Source Code (Java/Selenium):
 {source_code}

@@ -40,10 +40,16 @@
                 <textarea id="selenium-input" placeholder="// Paste your Selenium Java code here..."></textarea>
             </div>
 
-            <button class="convert-btn" id="convert-btn" onclick="handleConvert()">
-                <i class="fas fa-bolt"></i>
-                <span class="btn-text">CONVERT</span>
-            </button>
+            <div class="conversion-actions">
+                <button class="convert-btn simple" id="convert-btn-simple" onclick="handleConvert('simple')">
+                    <i class="fas fa-bolt"></i>
+                    <span class="btn-text">Simple Converter</span>
+                </button>
+                <button class="convert-btn runnable" id="convert-btn-runnable" onclick="handleConvert('runnable')">
+                    <i class="fas fa-play-circle"></i>
+                    <span class="btn-text">Runable Conversion</span>
+                </button>
+            </div>
 
             <div class="editor-container">
                 <div class="editor-header">
@@ -64,7 +70,7 @@
     </main>
 
     <script>
-        async function handleConvert() {
+        async function handleConvert(type = 'simple') {
             const input = document.getElementById('selenium-input').value;
             const statusBar = document.getElementById('status-bar');
 
@@ -77,17 +83,16 @@
                 return;
             }
 
-            const btn = document.getElementById('convert-btn');
             const app = document.getElementById('app-container');
 
             app.classList.add('loading');
-            statusBar.innerText = "Converting... Please wait (Inference in progress)";
+            statusBar.innerText = `Converting (${type})... Please wait (Inference in progress)`;
 
             try {
                 const response = await fetch('/convert', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ source_code: input })
+                    body: JSON.stringify({ source_code: input, type: type })
                 });
 
                 const result = await response.json();

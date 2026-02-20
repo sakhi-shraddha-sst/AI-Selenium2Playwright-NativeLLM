@@ -117,11 +117,18 @@ textarea {
     line-height: 1.6;
 }
 
+.conversion-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+}
+
 .convert-btn {
     background: var(--primary);
     color: white;
     border: none;
-    padding: 1.5rem 1rem;
+    padding: 1.25rem 1rem;
     border-radius: 1rem;
     cursor: pointer;
     font-weight: 700;
@@ -131,12 +138,21 @@ textarea {
     align-items: center;
     gap: 0.5rem;
     box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.4);
+    min-width: 160px;
+}
+
+.convert-btn.runnable {
+    background: linear-gradient(135deg, #6366f1, #a855f7);
 }
 
 .convert-btn:hover {
     background: var(--primary-hover);
     transform: translateY(-2px);
     box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.5);
+}
+
+.convert-btn.runnable:hover {
+    background: linear-gradient(135deg, #4f46e5, #9333ea);
 }
 
 .convert-btn:active {
