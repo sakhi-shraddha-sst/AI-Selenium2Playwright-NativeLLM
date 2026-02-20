@@ -1,7 +1,9 @@
 # 🚀 Selenium to Playwright Convertor (Local LLM)
-### High-Precision. Privacy-First. Automated QA Migration.
+### High-Precision. Local-First. Automation Engineering at Scale.
 
-A **Privacy-First, AI-Powered Conversion Tool** that automatically translates legacy Selenium Java code into idiomatic Playwright TypeScript. Powered by **Ollama (CodeLlama)** running locally on your machine—ensuring your proprietary code never leaves your network.
+**Selenium to Playwright Convertor** is a **professional-grade, privacy-first** transformation engine designed for automation architects to migrate legacy Selenium suites to modern Playwright infrastructure. Powered by **Ollama (CodeLlama)** running locally on your machine—ensuring your proprietary code never leaves your network. **100% on your local hardware**.
+
+![Convertor Preview](./assets/convertor_preview.png)
 
 ---
 
@@ -10,16 +12,20 @@ The system follows a 3-Layer Deterministic Architecture designed for maximum sec
 
 ```mermaid
 flowchart TD
-    Start([Start Studio]) --> Conn{Check Connection}
-    Conn -- Connected --> Fetch[Fetch Ollama Models]
-    Fetch --> Config[User: Select Model & Parameters]
-    Config --> Input[User: Enter Selenium Code]
-    Input --> Gen[Click Convert]
+    Start([Start Convertor]) --> Env{Check Environment}
+    Env -- Missing deps --> Install[Auto-Install Flask/Requests]
+    Env -- Ready --> Serve[Launch Backend & UI]
     
-    Gen --> API[Call Local Ollama API]
-    API --> Parse{Valid Transformation?}
+    Serve --> Input[User: Paste Selenium Code / Upload File]
+    Input --> Validate{Input Validation}
     
-    Parse -- Yes --> Render[Display Playwright TS]
+    Validate -- Empty/Invalid --> Error[Show Error Alert]
+    Validate -- Valid Selenium --> Prompt[Context Engineering & Prompt Build]
+    
+    Prompt --> Inference[Ollama: CodeLlama Inference]
+    Inference --> Post[Extractor & Sanitizer]
+    
+    Post --> Render[Display Playwright TS Output]
     Render --> Actions{User Actions}
     Actions -->|Copy| Clipboard[Copy to Clipboard]
     Actions -->|Download| Export[Download .spec.ts]
@@ -87,12 +93,8 @@ The system is designed for zero manual setup. Simply run the launcher for your O
 
 ---
 
-## 🤝 Contributing
-1. Fork the repository.
-2. Create a feature branch (`git checkout -b feature/amazing-feature`).
-3. Commit your changes (`git commit -m 'Add amazing feature'`).
-4. Push to the branch (`git push origin feature/amazing-feature`).
-5. Open a Pull Request.
+## 📑 Technical License
+Proprietary engineering tool designed for internal Automation Excellence. 
 
 ---
 **Built with ❤️ for the QA Community.**
