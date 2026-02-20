@@ -3,7 +3,7 @@
 
 **Selenium to Playwright Convertor** is a **professional-grade, privacy-first** transformation engine designed for automation architects to migrate legacy Selenium suites to modern Playwright infrastructure. Powered by **Ollama (CodeLlama)** running locally on your machine—ensuring your proprietary code never leaves your network. **100% on your local hardware**.
 
-![Convertor Preview](./assets/convertor_preview.png)
+![Convertor Preview](./assets/studio_preview_final.png)
 
 ---
 
