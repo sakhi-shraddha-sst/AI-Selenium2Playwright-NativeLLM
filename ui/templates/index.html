@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selenium to Playwright Convertor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Fira+Code&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <h1>Selenium to Playwright Convertor</h1>
+        <p class="subtitle">Deterministic Local LLM Automation Transformer</p>
+    </header>
+
+    <main id="app-container">
+        <div class="status-bar" id="status-bar">
+            Ready for conversion | Model: CodeLlama (Local)
+        </div>
+
+        <div class="workspace">
+            <div class="editor-container">
+                <div class="editor-header">
+                    <span class="label">Selenium Java</span>
+                    <div class="actions">
+                        <button class="icon-btn" onclick="clearInput()" title="Clear Text">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                        <button class="icon-btn" onclick="document.getElementById('file-input').click()"
+                            title="Upload File">
+                            <i class="fas fa-file-upload"></i>
+                        </button>
+                    </div>
+                    <input type="file" id="file-input" style="display: none" onchange="handleFileUpload(event)">
+                </div>
+                <textarea id="selenium-input" placeholder="// Paste your Selenium Java code here..."></textarea>
+            </div>
+
+            <button class="convert-btn" id="convert-btn" onclick="handleConvert()">
+                <i class="fas fa-bolt"></i>
+                <span class="btn-text">CONVERT</span>
+            </button>
+
+            <div class="editor-container">
+                <div class="editor-header">
+                    <span class="label">Playwright TS</span>
+                    <div class="actions">
+                        <button class="icon-btn" onclick="copyToClipboard()" title="Copy to Clipboard">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <button class="icon-btn" onclick="downloadResult()" title="Download File">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                </div>
+                <textarea id="playwright-output" readonly
+                    placeholder="// Converted code will appear here..."></textarea>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        async function handleConvert() {
+            const input = document.getElementById('selenium-input').value;
+            const statusBar = document.getElementById('status-bar');
+
+            // Clear previous errors
+            statusBar.classList.remove('error');
+
+            if (!input.trim()) {
+                statusBar.innerText = "Error: Input is empty. Please provide Selenium Java code.";
+                statusBar.classList.add('error');
+                return;
+            }
+
+            const btn = document.getElementById('convert-btn');
+            const app = document.getElementById('app-container');
+
+            app.classList.add('loading');
+            statusBar.innerText = "Converting... Please wait (Inference in progress)";
+
+            try {
+                const response = await fetch('/convert', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ source_code: input })
+                });
+
+                const result = await response.json();
+                if (result.status === 'success') {
+                    document.getElementById('playwright-output').value = result.converted_code;
+                    statusBar.innerText = "Conversion Successful | Model: CodeLlama";
+                } else {
+                    statusBar.innerText = result.error;
+                    statusBar.classList.add('error');
+                }
+            } catch (err) {
+                statusBar.innerText = "Error: " + err.message;
+                statusBar.classList.add('error');
+            } finally {
+                app.classList.remove('loading');
+            }
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('selenium-input').value = e.target.result;
+            };
+            reader.readAsText(file);
+        }
+
+        function copyToClipboard() {
+            const output = document.getElementById('playwright-output');
+            output.select();
+            document.execCommand('copy');
+            alert('Code copied to clipboard!');
+        }
+
+        function clearInput() {
+            document.getElementById('selenium-input').value = '';
+            document.getElementById('playwright-output').value = '';
+            const statusBar = document.getElementById('status-bar');
+            statusBar.innerText = "Ready for conversion | Model: CodeLlama (Local)";
+            statusBar.classList.remove('error');
+        }
+
+        async function downloadResult() {
+            const code = document.getElementById('playwright-output').value;
+            if (!code) return;
+
+            const response = await fetch('/download', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code: code, filename: 'converted_playwright_test.spec.ts' })
+            });
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'converted_playwright_test.spec.ts';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+
+</html>
