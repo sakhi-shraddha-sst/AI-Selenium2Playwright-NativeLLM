@@ -17,30 +17,40 @@ flowchart TD
     Env -- Ready --> Serve[Launch Backend & UI]
     
     Serve --> Input[User: Paste Selenium Code / Upload File]
-    Input --> Validate{Input Validation}
+    Input --> ModeSelection{User: Select Mode}
     
-    Validate -- Empty/Invalid --> Error[Show Error Alert]
-    Validate -- Valid Selenium --> Prompt[Context Engineering & Prompt Build]
+    ModeSelection -->|Simple| S_Prompt[Context: No Wrappers, 100% Fidelity]
+    ModeSelection -->|Runnable| R_Prompt[Context: Full Framework, Direct Run]
     
-    Prompt --> Inference[Ollama: CodeLlama Inference]
+    S_Prompt --> Inference[Ollama: CodeLlama Inference]
+    R_Prompt --> Inference
+    
     Inference --> Post[Extractor & Sanitizer]
-    
     Post --> Render[Display Playwright TS Output]
     Render --> Actions{User Actions}
     Actions -->|Copy| Clipboard[Copy to Clipboard]
-    Actions -->|Download| Export[Download .spec.ts]
+    Actions -->|Download| File[Download .spec.ts File]
+    Actions -->|Clear| Reset[Reset Workspace]
 ```
+
+1.  **Validation Layer**: Heuristic checks detect empty inputs, non-Selenium content, or already-converted Playwright code before inference begins.
+2.  **Dual-Path Context Engineering**: 
+    -   **Simple Mode**: Strips framework boilerplate to return precise, injectable logic snippets.
+    -   **Runnable Mode**: Wraps logic in a complete `@playwright/test` structure for immediate execution.
+3.  **Deterministic Output**: Uses a temperature of 0.0 to ensure that identical Selenium inputs always yield identical, reproducible Playwright transformations.
 
 ---
 
 ## ✨ Features
-*   **100% Local Execution**: Uses Ollama + CodeLlama. No API keys, no cloud costs, no third-party data dependency.
-*   **Modern UI**: High-readability dashboard featuring **Glassmorphism design**, optimized for long-form code reviews.
-*   **Smart Conversion Engine**: 
+*   **100% Local Execution**: Uses Ollama + CodeLlama. No API keys, no cloud costs, no data leaks.
+*   **🔄 Dual Conversion Modes**:
+    *   **Simple Converter**: Focuses on extreme logic fidelity. Returns ONLY the converted code lines, perfect for manual injection into existing suites.
+    *   **Runable Conversion**: Generates a complete, ready-to-run Playwright test file including imports, test blocks, and modern assertions.
+*   **Modern UI**: Built with a high-performance **Glassmorphism design** featuring clear-down functionality and instant status feedback.
+*   **Smart Conversion Rules**:
     *   Translates `driver.findElement` → `page.locator`.
     *   Converts **TestNG/JUnit** Annotations → Playwright Hooks.
-    *   Handles **Explicit & Implicit Waits** automatically.
-    *   Map Selenium Actions → Playwright `getByRole`, `getByLabel`, etc.
+    *   Handles **Waits and Actions** using modern async/await patterns.
 *   **Zero-Config Launchers**: One-click startup for macOS and Windows that handles environment validation and dependency installation.
 
 ---
